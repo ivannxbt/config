@@ -1,19 +1,42 @@
-# AI Config
+# ai config
 
-My personal configuration files for AI coding assistants. I use these across all my projects to keep things consistent.
+> personal configuration files for ai coding assistants. consistent ai behavior across all projects.
 
-## What's Inside
+---
 
-- `.agents/` - Generic AI agent instructions
-- `.claude/` - Claude AI config
-- `.cursor/` - Cursor editor rules
-- `.codex/` - OpenAI Codex / GitHub Copilot config
-- `.gemini/` - Google Gemini config
-- `.github/` - Issue and PR templates
+## what's inside
 
-## Usage
+| folder | purpose |
+|--------|---------|
+| `.agents/` | generic ai agent instructions |
+| `.claude/` | claude ai config |
+| `.cursor/` | cursor editor rules |
+| `.codex/` | openai codex / github copilot config |
+| `.gemini/` | google gemini config |
+| `.github/` | issue and pr templates |
 
-Clone and run the install script:
+---
+
+## skills
+
+skills extend ai capabilities with domain-specific knowledge. located in `.claude/skills/` and symlinked to other folders.
+
+| skill | description |
+|-------|-------------|
+| `agent-browser` | browser automation for web testing, form filling, screenshots, and data extraction |
+| `better-auth-best-practices` | integration guide for better auth, the typescript authentication framework |
+| `design-md` | analyze stitch projects and generate semantic design systems as design.md files |
+| `frontend-design` | create distinctive, production-grade frontend interfaces with high design quality |
+| `remotion-best-practices` | best practices for remotion, the react-based video creation library |
+| `skill-creator` | guide for creating new skills that extend ai capabilities |
+| `supabase-postgres-best-practices` | postgres performance optimization and best practices from supabase |
+| `ui-skills` | opinionated constraints for building better interfaces with tailwind, animations, and accessibility |
+| `vercel-react-best-practices` | react and next.js performance optimization guidelines from vercel |
+| `web-design-guidelines` | review ui code for web interface guidelines compliance and accessibility |
+
+---
+
+## quick start
 
 ```bash
 git clone https://github.com/ivannxbt/config.git
@@ -21,8 +44,10 @@ cd config
 ./scripts/install.sh /path/to/your/project
 ```
 
-Use `--link` to symlink instead of copy (useful if you want updates to sync automatically).
+use `--link` to symlink instead of copy (updates sync automatically).
 
-## License
+---
 
-MIT
+## license
+
+mit

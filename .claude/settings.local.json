@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(tree:*)",
+      "Bash(dir /b \"c:\\\\Users\\\\ivana\\\\config\\\\.claude\\\\skills\"\")"
     ]
   }
 }
