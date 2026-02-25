@@ -23,7 +23,7 @@ print_header()  {
 }
 
 show_usage() {
-    cat << EOF
+    cat << EOF2
 Usage: $0 [OPTIONS] [DESTINATION]
 
 Install AI agent configurations to your project.
@@ -42,8 +42,20 @@ EXAMPLES:
     $0 --link ~/my-project      # Create symlinks instead of copies
     $0 --all --link ~/my-project  # Install everything as symlinks
 
-EOF
+EOF2
     exit 0
+}
+
+config_label() {
+    case "$1" in
+        ".agents") echo "Generic AI Agent Instructions" ;;
+        ".claude") echo "Claude AI Configuration" ;;
+        ".cursor") echo "Cursor Editor Rules" ;;
+        ".codex") echo "OpenAI Codex Configuration" ;;
+        ".gemini") echo "Google Gemini Configuration" ;;
+        ".github") echo "GitHub Copilot Skills + PR/Issue Templates" ;;
+        *) echo "Unknown Configuration" ;;
+    esac
 }
 
 # Parse arguments
@@ -94,29 +106,24 @@ fi
 
 # Available configurations (ordered)
 CONFIG_KEYS=(".agents" ".claude" ".cursor" ".codex" ".gemini" ".github")
-declare -A CONFIG_LABELS
-CONFIG_LABELS[".agents"]="Generic AI Agent Instructions"
-CONFIG_LABELS[".claude"]="Claude AI Configuration"
-CONFIG_LABELS[".cursor"]="Cursor Editor Rules"
-CONFIG_LABELS[".codex"]="OpenAI Codex Configuration"
-CONFIG_LABELS[".gemini"]="Google Gemini Configuration"
-CONFIG_LABELS[".github"]="GitHub Copilot Skills + PR/Issue Templates"
+SELECTED=()
 
 # Select configurations
-declare -A SELECTED
 if [ "$INSTALL_ALL" = true ]; then
-    for config in "${CONFIG_KEYS[@]}"; do
-        SELECTED[$config]=true
+    for i in "${!CONFIG_KEYS[@]}"; do
+        SELECTED[$i]=true
     done
 else
     echo ""
     print_info "Select configurations to install:"
     echo ""
-    for config in "${CONFIG_KEYS[@]}"; do
-        read -r -p "$(echo -e "  Install ${BLUE}${config}${NC} (${CONFIG_LABELS[$config]})? [y/N]: ")" response || true
+    for i in "${!CONFIG_KEYS[@]}"; do
+        config="${CONFIG_KEYS[$i]}"
+        label="$(config_label "$config")"
+        read -r -p "$(echo -e "  Install ${BLUE}${config}${NC} (${label})? [y/N]: ")" response || true
         case "$response" in
-            [yY][eE][sS]|[yY]) SELECTED[$config]=true  ;;
-            *)                  SELECTED[$config]=false ;;
+            [yY][eE][sS]|[yY]) SELECTED[$i]=true  ;;
+            *)                  SELECTED[$i]=false ;;
         esac
     done
 fi
@@ -178,9 +185,9 @@ install_config() {
 echo ""
 print_header "📦 Installing Configurations"
 
-for config in "${CONFIG_KEYS[@]}"; do
-    if [ "${SELECTED[$config]}" = true ]; then
-        install_config "$config"
+for i in "${!CONFIG_KEYS[@]}"; do
+    if [ "${SELECTED[$i]}" = true ]; then
+        install_config "${CONFIG_KEYS[$i]}"
     fi
 done
 
