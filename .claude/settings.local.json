@@ -1,9 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git config:*)",
-      "Bash(tree:*)",
-      "Bash(dir /b \"c:\\\\Users\\\\ivana\\\\config\\\\.claude\\\\skills\"\")"
+      "Bash(ls -la \"c:\\\\Users\\\\IvanAlfredoCaamañoCa\\\\Documents\\\\config\\\\.github\"\" 2>/dev/null | grep -v \"^d \")"
     ]
   }
 }

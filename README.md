@@ -8,18 +8,20 @@
 
 | folder | purpose |
 |--------|---------|
-| `.agents/` | generic ai agent instructions |
-| `.claude/` | claude ai config |
+| `.agents/` | generic ai agent instructions (universal fallback for all tools) |
+| `.claude/` | claude code config — agents, skills, commands, settings |
 | `.cursor/` | cursor editor rules |
-| `.codex/` | openai codex / github copilot config |
-| `.gemini/` | google gemini config |
-| `.github/` | issue and pr templates |
+| `.codex/` | openai codex agent configuration |
+| `.gemini/` | google gemini cli configuration |
+| `.github/` | github copilot skills + issue/pr templates |
 
 ---
 
 ## skills
 
-skills extend ai capabilities with domain-specific knowledge. located in `.claude/skills/` and symlinked to other folders.
+skills extend ai capabilities with domain-specific knowledge. each tool folder contains its own copy of the skills so they work out of the box with any tool.
+
+skills follow the open [agent skills standard](https://agentskills.io) — supported by claude code, cursor, gemini cli, openai codex, github copilot, and more.
 
 | skill | description |
 |-------|-------------|
@@ -41,10 +43,20 @@ skills extend ai capabilities with domain-specific knowledge. located in `.claud
 ```bash
 git clone https://github.com/ivannxbt/config.git
 cd config
-./scripts/install.sh /path/to/your/project
+./install.sh /path/to/your/project
 ```
 
-use `--link` to symlink instead of copy (updates sync automatically).
+use `--all` to skip prompts and install everything at once:
+
+```bash
+./install.sh --all /path/to/your/project
+```
+
+use `--link` to symlink instead of copy (updates sync automatically):
+
+```bash
+./install.sh --link /path/to/your/project
+```
 
 ---
 

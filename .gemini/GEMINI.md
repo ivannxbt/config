@@ -1,113 +1,75 @@
-# Gemini AI Configuration
+# Gemini CLI Configuration
 
-## Context
+## Style & Communication
 
-### Project Information
-- **Name**: [Your Project Name]
-- **Description**: [Brief description]
-- **Domain**: [Web, Mobile, Data Science, etc.]
-- **Stage**: [Development, Production, Maintenance]
+- Be direct and pragmatic. Substance over compliments.
+- Explain what you're doing and why in plain language.
+- Add comments to generated code — explain the "why", not just the "what".
+- Keep responses concise. Skip filler words and shallow praise.
+- Critically analyze ideas — question assumptions, offer counterarguments when relevant.
 
-### Technology Stack
-- **Frontend**: [React, Vue, Angular, etc.]
-- **Backend**: [Node.js, Python, Java, etc.]
-- **Database**: [PostgreSQL, MongoDB, etc.]
-- **Infrastructure**: [AWS, GCP, Azure, etc.]
+## Stack
 
-### Team Structure
-- **Team Size**: [Number of developers]
-- **Roles**: [Frontend, Backend, Full-stack, DevOps]
-- **Workflow**: [Agile, Scrum, Kanban, etc.]
+- **Languages**: TypeScript (primary), JavaScript, Python
+- **Frontend**: React, Next.js, Tailwind CSS
+- **Backend**: Node.js, Supabase, Postgres
+- **Auth**: Better Auth
+- **Animation**: Framer Motion (motion/react)
+- **Video**: Remotion
+- **Package Manager**: npm or bun
 
-## Preferences
+## Code Preferences
 
-### Code Style
-- **Indentation**: [2 or 4 spaces]
-- **Line Length**: [80, 100, or 120 characters]
-- **Quotes**: [Single or double]
-- **Trailing Commas**: [Yes/No]
+### JavaScript / TypeScript
 
-### Language Features
-- **JavaScript/TypeScript**:
-  - Use async/await over promises
-  - Prefer const/let over var
-  - Use arrow functions when appropriate
-  - Enable strict mode
+- Use async/await — never raw `.then()` chains
+- Prefer `const` / `let`, never `var`
+- Enable strict mode
+- Use TypeScript for all new files
+- Arrow functions for callbacks, named functions for top-level declarations
+- Functional components with hooks (no class components)
 
-- **Python**:
-  - Follow PEP 8
-  - Use type hints
-  - Prefer list comprehensions when readable
-  - Use context managers for resources
+### Formatting
 
-### Frameworks and Libraries
-- **Preferred Libraries**: [List your go-to libraries]
-- **Avoided Patterns**: [Anti-patterns to avoid]
-- **State Management**: [Redux, Context, Zustand, etc.]
-- **Styling**: [CSS Modules, Styled Components, Tailwind, etc.]
+- 2-space indentation
+- Single quotes
+- Semicolons
+- Trailing commas in multi-line structures
 
-### Testing Strategy
-- **Unit Tests**: [Jest, pytest, etc.]
-- **Integration Tests**: [Cypress, Selenium, etc.]
-- **Coverage Target**: [e.g., 80%]
-- **Test Location**: [Co-located, separate test directory]
+### Architecture
 
-### Documentation
-- **API Documentation**: [Swagger, JSDoc, etc.]
-- **Code Comments**: [When and how to comment]
-- **README Structure**: [Sections to include]
-- **Changelog**: [Keep a CHANGELOG.md]
+- Keep functions small and focused (single responsibility)
+- Avoid deep nesting — use early returns
+- No premature abstraction — three similar lines beats a helper no one needs
+- Don't add error handling for scenarios that can't happen
+- Trust framework guarantees; validate only at system boundaries (user input, external APIs)
+- Only make changes directly requested or clearly necessary
 
-### Performance
-- **Optimization Priority**: [Load time, runtime, memory]
-- **Bundle Size**: [Target size if applicable]
-- **Caching Strategy**: [Browser cache, CDN, etc.]
-- **Lazy Loading**: [When to use]
+### Don't Do
 
-### Accessibility
-- **WCAG Level**: [A, AA, or AAA]
-- **Screen Reader Support**: [Yes/No]
-- **Keyboard Navigation**: [Requirements]
-- **Color Contrast**: [Minimum ratio]
+- No backwards-compatibility shims for code that isn't public
+- No docstrings or type annotations added to code you didn't change
+- No feature flags for simple changes
+- No over-engineering for hypothetical future requirements
 
-### Security
-- **Authentication**: [JWT, OAuth, Session-based]
-- **Authorization**: [RBAC, ABAC, etc.]
-- **Input Validation**: [Client-side and server-side]
-- **Dependency Scanning**: [Tools used]
+## Testing
 
-## Workflow
+- Write tests for new features
+- Follow AAA: Arrange, Act, Assert
+- Use descriptive test names
 
-### Development Process
-1. Create feature branch from main/develop
-2. Implement feature with tests
-3. Run linters and tests locally
-4. Create pull request with description
-5. Address review comments
-6. Merge after approval
+## Git
 
-### Code Review Guidelines
-- Focus on logic and design
-- Check for security issues
-- Verify test coverage
-- Ensure documentation is updated
-
-### Deployment
-- **CI/CD**: [GitHub Actions, Jenkins, etc.]
-- **Environments**: [Dev, Staging, Production]
-- **Deployment Frequency**: [On-demand, scheduled]
-- **Rollback Strategy**: [How to handle failures]
-
-## Customization
-
-Customize this template with your specific preferences, project requirements, and team conventions.
+- Commit messages: imperative present tense ("Add", "Fix", "Update", "Remove")
+- First line under 72 characters
 
 ## Browser Automation
 
 Use `agent-browser` for web automation. Run `agent-browser --help` for all commands.
 
 Core workflow:
-1. `agent-browser open <url>` - Navigate to page
-2. `agent-browser snapshot -i` - Get interactive elements with refs (@e1, @e2)
-3. `agent-browser click @e1` / `fill @e2 "text"` - Interact using refs
+
+1. `agent-browser open <url>` — Navigate to page
+2. `agent-browser snapshot -i` — Get interactive elements with refs (@e1, @e2)
+3. `agent-browser click @e1` / `fill @e2 "text"` — Interact using refs
 4. Re-snapshot after page changes
