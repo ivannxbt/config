@@ -38,6 +38,32 @@ skills follow the open [agent skills standard](https://agentskills.io) — suppo
 
 ---
 
+## skills.sh
+
+this repo can be consumed directly with [skills.sh](https://skills.sh/):
+
+```bash
+npx skills add https://github.com/ivannxbt/config --all
+```
+
+or install a single skill:
+
+```bash
+npx skills add https://github.com/ivannxbt/config --skill frontend-design
+```
+
+generate commands for every available skill:
+
+```bash
+npm run skills:catalog
+```
+
+notes:
+- keep the repo public so skills.sh users can install from github.
+- installs happen client-side via `npx skills add ...`; there is no separate upload step in this repo.
+
+---
+
 ## quick start
 
 ```bash
@@ -46,17 +72,46 @@ cd config
 ./install.sh /path/to/your/project
 ```
 
-use `--all` to skip prompts and install everything at once:
+or run directly with node:
 
 ```bash
-./install.sh --all /path/to/your/project
+node scripts/install.mjs /path/to/your/project
+```
+
+on windows powershell:
+
+```powershell
+.\install.ps1 C:\path\to\your\project
+```
+
+use `--all` to skip per-config prompts and install everything at once:
+
+```bash
+./install.sh --all --yes /path/to/your/project
 ```
 
 use `--link` to symlink instead of copy (updates sync automatically):
 
 ```bash
-./install.sh --link /path/to/your/project
+./install.sh --all --link --yes /path/to/your/project
 ```
+
+preview actions without changing files:
+
+```bash
+./install.sh --all --dry-run /path/to/your/project
+```
+
+### installer flags
+
+- `--all`: install every supported config folder
+- `--link`: create directory links instead of copying
+- `--yes` / `-y`: skip final confirmation
+- `--dry-run`: print actions only, no filesystem changes
+- `--force`: allow non-interactive execution
+- `--no-backup`: disable backup-before-replace behavior
+
+by default, existing destination folders are backed up into `.config-backup-YYYYMMDD-HHMMSS` before replacement.
 
 ---
 

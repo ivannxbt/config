@@ -1,0 +1,10 @@
+{
+  "name": "ai-config-installer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:run": "node scripts/install.mjs",
+    "skills:catalog": "node scripts/skills-catalog.mjs",
+    "test": "node tests/install.test.mjs"
+  }
+}
