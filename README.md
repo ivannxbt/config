@@ -36,6 +36,22 @@ skills follow the open [agent skills standard](https://agentskills.io) — suppo
 | `vercel-react-best-practices` | react and next.js performance optimization guidelines from vercel |
 | `web-design-guidelines` | review ui code for web interface guidelines compliance and accessibility |
 
+### sync from global skills
+
+to mirror your local global skills into this repo before pushing to github:
+
+```bash
+npm run skills:sync
+```
+
+sync behavior:
+- sources: `~/.agents/skills` + `~/.codex/skills`
+- precedence on conflicts: `~/.agents/skills` wins
+- excluded: `~/.codex/skills/.system`
+- filtered metadata: `.clawdhub`, `.DS_Store`, `Thumbs.db`, `desktop.ini`
+- canonical mirror target: `.agents/skills` (exact mirror, including deletions)
+- propagated full copies: `.agent/skills`, `.claude/skills`, `.gemini/skills`, `.cursor/skills`, `.github/skills`, `.codex/skills`
+
 ---
 
 ## skills.sh

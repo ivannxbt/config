@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "install:run": "node scripts/install.mjs",
+    "skills:sync": "node scripts/sync-global-skills.mjs",
     "skills:catalog": "node scripts/skills-catalog.mjs",
-    "test": "node tests/install.test.mjs"
+    "test": "node tests/install.test.mjs && node tests/sync-global-skills.test.mjs"
   }
 }
