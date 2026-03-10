@@ -8,6 +8,7 @@
 
 | folder | purpose |
 |--------|---------|
+| `.agent/` | lightweight agent configuration and skill links |
 | `.agents/` | generic ai agent instructions (universal fallback for all tools) |
 | `.claude/` | claude code config — agents, skills, commands, settings |
 | `.cursor/` | cursor editor rules |
@@ -17,9 +18,15 @@
 
 ---
 
+supported top-level config folders are defined in `configs.manifest.json`. add or rename folders there first so the installer, tests, and ci stay in sync.
+
+---
+
 ## skills
 
 skills extend ai capabilities with domain-specific knowledge. each tool folder contains its own copy of the skills so they work out of the box with any tool.
+
+for codex, the repo tracks a shared `.codex/config.toml.template` with portable `{{HOME}}` placeholders only. the installer renders it to `.codex/config.toml` using the current user's home directory, while machine-local codex settings stay out of the repo.
 
 skills follow the open [agent skills standard](https://agentskills.io) — supported by claude code, cursor, gemini cli, openai codex, github copilot, and more.
 
@@ -78,6 +85,8 @@ or run directly with node:
 node scripts/install.mjs /path/to/your/project
 ```
 
+requires node.js 20 or newer.
+
 on windows powershell:
 
 ```powershell
@@ -96,6 +105,8 @@ use `--link` to symlink instead of copy (updates sync automatically):
 ./install.sh --all --link --yes /path/to/your/project
 ```
 
+`--link` still renders `.codex` as a local copy because codex config needs machine-local path rendering at install time.
+
 preview actions without changing files:
 
 ```bash
@@ -112,6 +123,8 @@ preview actions without changing files:
 - `--no-backup`: disable backup-before-replace behavior
 
 by default, existing destination folders are backed up into `.config-backup-YYYYMMDD-HHMMSS` before replacement.
+
+ci validates the manifest, verifies the required directory structure from that manifest, runs `npm test`, and smoke-tests the installer in dry-run mode.
 
 ---
 

@@ -17,9 +17,9 @@ async function main() {
     .sort((a, b) => a.localeCompare(b));
 
   process.stdout.write(`skills.sh install commands for ${repoUrl}\n\n`);
-  process.stdout.write(`Install all:\n`);
+  process.stdout.write('Install all:\n');
   process.stdout.write(`npx skills add ${repoUrl} --all\n\n`);
-  process.stdout.write(`Install one skill:\n`);
+  process.stdout.write('Install one skill:\n');
   for (const skill of skills) {
     process.stdout.write(`npx skills add ${repoUrl} --skill ${skill}\n`);
   }

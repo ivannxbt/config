@@ -1,0 +1,30 @@
+[
+  {
+    "key": ".agent",
+    "label": "Agent configuration"
+  },
+  {
+    "key": ".agents",
+    "label": "Generic AI agent instructions"
+  },
+  {
+    "key": ".claude",
+    "label": "Claude AI configuration"
+  },
+  {
+    "key": ".cursor",
+    "label": "Cursor editor rules"
+  },
+  {
+    "key": ".codex",
+    "label": "OpenAI Codex configuration"
+  },
+  {
+    "key": ".gemini",
+    "label": "Google Gemini CLI configuration"
+  },
+  {
+    "key": ".github",
+    "label": "GitHub Copilot + templates"
+  }
+]

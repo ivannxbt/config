@@ -2,54 +2,47 @@ name: Validate Configuration Files
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Validate YAML files
-      run: |
-        echo "🔍 Validating YAML files..."
-        find . -name "*.yml" -o -name "*.yaml" | while read file; do
-          echo "Checking $file"
-          python3 -c "import yaml; yaml.safe_load(open('$file'))" || exit 1
-        done
-        echo "✅ All YAML files are valid"
-    
-    - name: Validate JSON files
-      run: |
-        echo "🔍 Validating JSON files..."
-        find . -name "*.json" | while read file; do
-          echo "Checking $file"
-          python3 -c "import json; json.load(open('$file'))" || exit 1
-        done
-        echo "✅ All JSON files are valid"
-    
-    - name: Validate Markdown files
-      run: |
-        echo "🔍 Checking Markdown files..."
-        find . -name "*.md" | while read file; do
-          echo "Found: $file"
-        done
-        echo "✅ Markdown files check complete"
-    
-    - name: Verify directory structure
-      run: |
-        echo "🔍 Verifying directory structure..."
-        dirs=(".agents" ".claude" ".cursor" ".codex" ".gemini" ".github" "scripts")
-        for dir in "${dirs[@]}"; do
-          if [ -d "$dir" ]; then
-            echo "✅ $dir exists"
-          else
-            echo "❌ $dir is missing"
-            exit 1
-          fi
-        done
-        echo "✅ Directory structure is valid"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate manifest JSON
+        run: node -e "JSON.parse(require('node:fs').readFileSync('configs.manifest.json','utf8'))"
+
+      - name: Verify directory structure from manifest
+        run: |
+          node --input-type=module <<'EOF'
+          import fs from 'node:fs';
+
+          const configs = JSON.parse(fs.readFileSync('configs.manifest.json', 'utf8'));
+          const requiredPaths = [...configs.map((config) => config.key), 'scripts'];
+
+          for (const target of requiredPaths) {
+            if (!fs.existsSync(target) || !fs.statSync(target).isDirectory()) {
+              console.error(`Missing required directory: ${target}`);
+              process.exit(1);
+            }
+            console.log(`OK ${target}`);
+          }
+          EOF
+
+      - name: Run installer tests
+        run: npm test
+
+      - name: Smoke-test installer dry run
+        run: |
+          mkdir -p /tmp/config-installer-smoke
+          node scripts/install.mjs --all --dry-run --yes /tmp/config-installer-smoke

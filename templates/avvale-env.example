@@ -1,0 +1,13 @@
+# Azure OpenAI — Avvale enterprise agreement
+AZURE_OPENAI_ENDPOINT=https://<resource-name>.openai.azure.com/
+AZURE_OPENAI_API_KEY=<your-api-key>
+AZURE_OPENAI_DEPLOYMENT_NAME=<deployment-name>
+AZURE_OPENAI_API_VERSION=2024-12-01-preview
+
+# Optional: model-specific deployments
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT=<embedding-deployment-name>
+
+# Application
+APP_ENV=development
+APP_PORT=8000
+LOG_LEVEL=info

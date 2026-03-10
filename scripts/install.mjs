@@ -8,14 +8,16 @@ import readline from 'node:readline/promises';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
-export const CONFIGS = [
-  { key: '.agents', label: 'Generic AI agent instructions' },
-  { key: '.claude', label: 'Claude AI configuration' },
-  { key: '.cursor', label: 'Cursor editor rules' },
-  { key: '.codex', label: 'OpenAI Codex configuration' },
-  { key: '.gemini', label: 'Google Gemini CLI configuration' },
-  { key: '.github', label: 'GitHub Copilot + templates' },
-];
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(scriptDirectory, '..');
+const configsManifestPath = path.join(repoRoot, 'configs.manifest.json');
+
+export const CONFIGS = JSON.parse(
+  fssync.readFileSync(configsManifestPath, 'utf8'),
+);
+
+const CODEX_CONFIG_KEY = '.codex';
+const CODEX_TEMPLATE_NAME = 'config.toml.template';
 
 const isTty = Boolean(process.stdout.isTTY);
 const COLORS = {
@@ -201,10 +203,9 @@ async function resolveSelection(options, interactive, prompter) {
 }
 
 async function ensureBackupDirectory(backupDirectory, dryRun) {
-  if (dryRun) {
-    return;
+  if (!dryRun) {
+    await fs.mkdir(backupDirectory, { recursive: true });
   }
-  await fs.mkdir(backupDirectory, { recursive: true });
 }
 
 async function backupExisting(destinationPath, backupDirectory, dryRun) {
@@ -270,6 +271,36 @@ async function copyDirectory(sourcePath, destinationPath, dryRun) {
   await fs.cp(sourcePath, destinationPath, { recursive: true, force: true });
 }
 
+function escapeTomlString(value) {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+}
+
+async function renderCodexTemplate(sourcePath) {
+  const templatePath = path.join(sourcePath, CODEX_TEMPLATE_NAME);
+  const template = await fs.readFile(templatePath, 'utf8');
+  return template.replaceAll('{{HOME}}', escapeTomlString(os.homedir()));
+}
+
+async function installCodexConfig(sourcePath, destinationPath, dryRun) {
+  const renderedConfig = await renderCodexTemplate(sourcePath);
+  const renderedConfigPath = path.join(destinationPath, 'config.toml');
+
+  if (dryRun) {
+    info(`[dry-run] render ${renderedConfigPath} from ${path.join(sourcePath, CODEX_TEMPLATE_NAME)}`);
+    return;
+  }
+
+  await fs.mkdir(destinationPath, { recursive: true });
+  await fs.cp(sourcePath, destinationPath, {
+    recursive: true,
+    force: true,
+    filter: (candidate) => path.basename(candidate) !== CODEX_TEMPLATE_NAME,
+  });
+  await fs.writeFile(renderedConfigPath, renderedConfig, 'utf8');
+}
+
 async function createDirectoryLink(sourcePath, destinationPath, dryRun) {
   if (dryRun) {
     info(`[dry-run] link ${destinationPath} -> ${sourcePath}`);
@@ -312,6 +343,34 @@ export async function executeInstall({
       const warning = `Source not found, skipping ${config.key}`;
       summary.warnings.push(warning);
       warn(warning);
+      continue;
+    }
+
+    if (config.key === CODEX_CONFIG_KEY) {
+      const destinationExists = await pathExists(destinationPath);
+      if (destinationExists && backup) {
+        if (!backupCreated) {
+          await ensureBackupDirectory(backupDirectory, dryRun);
+          backupCreated = true;
+          summary.backupDirectory = backupDirectory;
+          info(`${dryRun ? '[dry-run] would create' : 'Created'} backup directory: ${backupDirectory}`);
+        }
+        await backupExisting(destinationPath, backupDirectory, dryRun);
+      }
+
+      if (destinationExists) {
+        await removePath(destinationPath, dryRun);
+      }
+
+      if (link) {
+        const warning = '.codex is rendered locally even in link mode because Codex skill paths are host-specific.';
+        summary.warnings.push(warning);
+        warn(warning);
+      }
+
+      await installCodexConfig(sourcePath, destinationPath, dryRun);
+      summary.installed.push(config.key);
+      ok(`${dryRun ? '[dry-run] would render' : 'Rendered'} ${config.key}`);
       continue;
     }
 
@@ -371,8 +430,6 @@ async function runCli() {
     return;
   }
 
-  const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
-  const repoRoot = path.resolve(scriptDirectory, '..');
   const destination = validateDestination(options.destination, repoRoot);
   const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
