@@ -4,6 +4,75 @@
 
 ---
 
+## installation
+
+```bash
+npx @ivannxbt/ai-config --all --yes
+```
+
+by default this installs the config folders directly into your home directory (`~`).
+
+use `--link` to symlink instead of copy (updates sync automatically):
+
+```bash
+npx @ivannxbt/ai-config --all --link --yes
+```
+
+preview actions without changing files:
+
+```bash
+npx @ivannxbt/ai-config --all --dry-run --yes
+```
+
+install into another destination explicitly if you do not want `~`:
+
+```bash
+npx @ivannxbt/ai-config --all --yes /path/to/your/project
+```
+
+for local development or if you prefer cloning:
+
+```bash
+git clone https://github.com/ivannxbt/config.git
+cd config
+./install.sh /path/to/your/project
+```
+
+requires node.js 20 or newer.
+
+on windows powershell:
+
+```powershell
+.\install.ps1 C:\path\to\your\project
+```
+
+`--link` still renders `.codex` as a local copy because codex config needs machine-local path rendering at install time.
+
+### install paths
+
+| use case | command |
+|----------|---------|
+| full config install in `~` | `npx @ivannxbt/ai-config --all --yes` |
+| full config install in another folder | `npx @ivannxbt/ai-config --all --yes /path/to/project` |
+| one reusable skill | `npx skills add https://github.com/ivannxbt/config --skill frontend-design` |
+| all reusable skills | `npx skills add https://github.com/ivannxbt/config --all` |
+| local repo workflow | `./install.sh /path/to/project` |
+
+### installer flags
+
+- `--all`: install every supported config folder
+- `--link`: create directory links instead of copying
+- `--yes` / `-y`: skip final confirmation
+- `--dry-run`: print actions only, no filesystem changes
+- `--force`: allow non-interactive execution
+- `--no-backup`: disable backup-before-replace behavior
+
+by default, existing destination folders are backed up into `.config-backup-YYYYMMDD-HHMMSS` before replacement.
+
+ci validates the manifest, verifies the required directory structure from that manifest, runs `npm test`, and smoke-tests the installer in dry-run mode.
+
+---
+
 ## what's inside
 
 | folder | purpose |
@@ -68,63 +137,21 @@ npm run skills:catalog
 notes:
 - keep the repo public so skills.sh users can install from github.
 - installs happen client-side via `npx skills add ...`; there is no separate upload step in this repo.
+- this path installs reusable skills only. it does not install full dotfolder config like `.codex`, `.cursor`, or `.claude`.
 
----
+## publishing
 
-## quick start
-
-```bash
-git clone https://github.com/ivannxbt/config.git
-cd config
-./install.sh /path/to/your/project
-```
-
-or run directly with node:
+publish the cli as a public scoped npm package so users can install without cloning:
 
 ```bash
-node scripts/install.mjs /path/to/your/project
+npm publish --access public
 ```
 
-requires node.js 20 or newer.
-
-on windows powershell:
-
-```powershell
-.\install.ps1 C:\path\to\your\project
-```
-
-use `--all` to skip per-config prompts and install everything at once:
+verify the published package contents before release:
 
 ```bash
-./install.sh --all --yes /path/to/your/project
+npm run pack:check
 ```
-
-use `--link` to symlink instead of copy (updates sync automatically):
-
-```bash
-./install.sh --all --link --yes /path/to/your/project
-```
-
-`--link` still renders `.codex` as a local copy because codex config needs machine-local path rendering at install time.
-
-preview actions without changing files:
-
-```bash
-./install.sh --all --dry-run /path/to/your/project
-```
-
-### installer flags
-
-- `--all`: install every supported config folder
-- `--link`: create directory links instead of copying
-- `--yes` / `-y`: skip final confirmation
-- `--dry-run`: print actions only, no filesystem changes
-- `--force`: allow non-interactive execution
-- `--no-backup`: disable backup-before-replace behavior
-
-by default, existing destination folders are backed up into `.config-backup-YYYYMMDD-HHMMSS` before replacement.
-
-ci validates the manifest, verifies the required directory structure from that manifest, runs `npm test`, and smoke-tests the installer in dry-run mode.
 
 ---
 

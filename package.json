@@ -1,13 +1,46 @@
 {
-  "name": "ai-config-installer",
-  "private": true,
+  "name": "@ivannxbt/ai-config",
+  "version": "0.1.0",
+  "description": "One-command installer for shared AI coding assistant config.",
   "type": "module",
+  "bin": {
+    "ai-config": "./bin/ai-config.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "templates",
+    ".agent",
+    ".agents",
+    ".claude",
+    ".codex",
+    ".cursor",
+    ".gemini",
+    ".github",
+    "configs.manifest.json",
+    "README.md",
+    "LICENSE",
+    "install.sh",
+    "install.ps1"
+  ],
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "install:run": "node scripts/install.mjs",
     "skills:catalog": "node scripts/skills-catalog.mjs",
+    "pack:check": "npm_config_cache=.npm-cache npm pack --dry-run",
     "test": "node tests/install.test.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivannxbt/config.git"
+  },
+  "homepage": "https://github.com/ivannxbt/config",
+  "bugs": {
+    "url": "https://github.com/ivannxbt/config/issues"
   }
 }

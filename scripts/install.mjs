@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDirectory, '..');
 const configsManifestPath = path.join(repoRoot, 'configs.manifest.json');
+const DEFAULT_DESTINATION = os.homedir();
 
 export const CONFIGS = JSON.parse(
   fssync.readFileSync(configsManifestPath, 'utf8'),
@@ -84,7 +85,7 @@ export function parseArgs(argv) {
     dryRun: false,
     force: false,
     backup: true,
-    destination: '.',
+    destination: DEFAULT_DESTINATION,
     help: false,
   };
 
@@ -105,7 +106,7 @@ export function parseArgs(argv) {
       options.help = true;
     } else if (arg.startsWith('-')) {
       throw new Error(`Unknown option: ${arg}`);
-    } else if (options.destination !== '.') {
+    } else if (options.destination !== DEFAULT_DESTINATION) {
       throw new Error(`Unexpected argument: ${arg}`);
     } else {
       options.destination = arg;
@@ -115,10 +116,10 @@ export function parseArgs(argv) {
   return options;
 }
 
-function showUsage() {
-  process.stdout.write(`Usage: install [OPTIONS] [DESTINATION]
+function showUsage(commandName = 'install') {
+  process.stdout.write(`Usage: ${commandName} [OPTIONS] [DESTINATION]
 
-Install AI agent configurations into an existing destination folder.
+Install AI agent configurations into your home directory by default, or into DESTINATION if provided.
 
 Options:
   --all            Install all configurations without per-item prompts
@@ -130,10 +131,10 @@ Options:
   -h, --help       Show this help message
 
 Examples:
-  ./install.sh
-  ./install.sh --all --yes ~/my-project
-  ./install.sh --link --all --yes ~/my-project
-  node scripts/install.mjs --all --dry-run /tmp/my-project
+  ${commandName} --all --yes
+  ${commandName} --all --link --yes
+  ${commandName} --all --dry-run --yes
+  ${commandName} --all --yes ~/my-project
 `);
 }
 
@@ -158,7 +159,6 @@ async function isDirectory(targetPath) {
 export function validateDestination(destination, repoRoot) {
   const resolvedDestination = path.resolve(destination);
   const resolvedRepoRoot = path.resolve(repoRoot);
-  const resolvedHome = path.resolve(os.homedir());
 
   if (!fssync.existsSync(resolvedDestination)) {
     throw new Error(`Destination directory does not exist: ${destination}`);
@@ -170,10 +170,6 @@ export function validateDestination(destination, repoRoot) {
 
   if (isRootPath(resolvedDestination)) {
     throw new Error(`Refusing to install into filesystem root: ${resolvedDestination}`);
-  }
-
-  if (normalizeForCompare(resolvedDestination) === normalizeForCompare(resolvedHome)) {
-    throw new Error(`Refusing to install into your home directory: ${resolvedDestination}`);
   }
 
   if (normalizeForCompare(resolvedDestination) === normalizeForCompare(resolvedRepoRoot)) {
@@ -423,10 +419,13 @@ export async function executeInstall({
   return summary;
 }
 
-async function runCli() {
-  const options = parseArgs(process.argv.slice(2));
+export async function runCli(argv = process.argv.slice(2)) {
+  const options = parseArgs(argv);
   if (options.help) {
-    showUsage();
+    const commandName = process.argv[1]
+      ? path.basename(process.argv[1], path.extname(process.argv[1]))
+      : 'install';
+    showUsage(commandName);
     return;
   }
 

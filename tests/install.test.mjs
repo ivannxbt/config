@@ -4,6 +4,8 @@ import fs from 'node:fs/promises';
 import fssync from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 import { CONFIGS, executeInstall, parseArgs, validateDestination } from '../scripts/install.mjs';
@@ -11,6 +13,8 @@ import { CONFIGS, executeInstall, parseArgs, validateDestination } from '../scri
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const manifestPath = path.join(repoRoot, 'configs.manifest.json');
 const codexTemplatePath = path.join(repoRoot, '.codex', 'config.toml.template');
+const binPath = path.join(repoRoot, 'bin', 'ai-config.mjs');
+const execFileAsync = promisify(execFile);
 
 async function makeTempDir(prefix) {
   return fs.mkdtemp(path.join(os.tmpdir(), prefix));
@@ -53,14 +57,63 @@ test('parseArgs handles primary flags and destination', () => {
   assert.equal(parsed.destination, 'C:\\tmp');
 });
 
-test('validateDestination rejects home directory', () => {
+test('parseArgs defaults destination to the current home directory', () => {
+  const parsed = parseArgs([]);
+  assert.equal(parsed.destination, os.homedir());
+});
+
+test('package metadata exposes a public npx cli and bundled config assets', () => {
+  const pkg = JSON.parse(fssync.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
+  assert.equal(pkg.name, '@ivannxbt/ai-config');
+  assert.equal(pkg.publishConfig.access, 'public');
+  assert.equal(pkg.bin['ai-config'], './bin/ai-config.mjs');
+  assert.ok(pkg.files.includes('scripts'));
+  assert.ok(pkg.files.includes('configs.manifest.json'));
+  for (const config of CONFIGS) {
+    assert.ok(pkg.files.includes(config.key), `${config.key} should be packaged`);
+  }
+});
+
+test('validateDestination allows home directory installs', () => {
   const home = os.homedir();
-  assert.throws(() => validateDestination(home, path.join(home, 'other-repo')), /home directory/i);
+  assert.equal(validateDestination(home, path.join(home, 'other-repo')), path.resolve(home));
 });
 
 test('validateDestination rejects source repository path', async () => {
   const root = await makeTempDir('config-safety-');
   assert.throws(() => validateDestination(root, root), /source repository/i);
+});
+
+test('cli help is available through the publishable bin', async () => {
+  const { stdout } = await execFileAsync(process.execPath, [binPath, '--help'], {
+    cwd: repoRoot,
+  });
+
+  assert.match(stdout, /Usage: ai-config/i);
+  assert.match(stdout, /--all/);
+});
+
+test('cli dry-run install works through the publishable bin', async () => {
+  const destination = await makeTempDir('config-cli-dry-run-');
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [binPath, '--all', '--dry-run', '--yes', destination],
+    { cwd: repoRoot },
+  );
+
+  assert.match(stdout, /Destination:/);
+  assert.match(stdout, /\[dry-run\] would copy \.agent/);
+  assert.match(stdout, /Installation complete\./);
+});
+
+test('cli dry-run defaults destination to home when omitted', async () => {
+  const { stdout } = await execFileAsync(
+    process.execPath,
+    [binPath, '--all', '--dry-run', '--yes'],
+    { cwd: repoRoot },
+  );
+
+  assert.match(stdout, new RegExp(`Destination: ${path.resolve(os.homedir()).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
 });
 
 test('executeInstall copies config and creates backup for existing destination', async () => {
