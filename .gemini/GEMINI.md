@@ -1,75 +1,90 @@
-# Gemini CLI Configuration
+# GEMINI.md
 
-## Style & Communication
+This file provides context and instructions for Gemini CLI when operating within this workspace.
 
-- Be direct and pragmatic. Substance over compliments.
-- Explain what you're doing and why in plain language.
-- Add comments to generated code — explain the "why", not just the "what".
-- Keep responses concise. Skip filler words and shallow praise.
-- Critically analyze ideas — question assumptions, offer counterarguments when relevant.
+## Workspace Overview
 
-## Stack
+This is a multi-project development environment focused on the **Nexxo** product ecosystem, personal portfolio projects, and corporate automation.
 
-- **Languages**: TypeScript (primary), JavaScript, Python
-- **Frontend**: React, Next.js, Tailwind CSS
-- **Backend**: Node.js, Supabase, Postgres
-- **Auth**: Better Auth
-- **Animation**: Framer Motion (motion/react)
-- **Video**: Remotion
-- **Package Manager**: npm or bun
+### Project Map
 
-## Code Preferences
+| Project | Path | Stack | Package Manager |
+|---------|------|-------|-----------------|
+| **Next.js Web** | `~/Proyectos/nexxo-web` | Next.js 16, Tailwind v4, Supabase | `npm` |
+| **NestJS Server** | `~/Proyectos/server` | NestJS 11, Prisma, PostgreSQL | `pnpm` |
+| **Expo App** | `~/Proyectos/expo-app-*` | Expo 53, React Native, TanStack Query | `bun` |
+| **Auth Server** | `~/Proyectos/server-auth` | NestJS, Prisma, JWT/Passport | `pnpm` |
+| **Corporate** | `~/Library/CloudStorage/OneDrive-AvvaleS.p.A/` | Python, FastAPI, Azure OpenAI | `pip` |
 
-### JavaScript / TypeScript
+## Core Mandates
 
-- Use async/await — never raw `.then()` chains
-- Prefer `const` / `let`, never `var`
-- Enable strict mode
-- Use TypeScript for all new files
-- Arrow functions for callbacks, named functions for top-level declarations
-- Functional components with hooks (no class components)
+1.  **Contextual Precedence:** Always prioritize project-specific instructions (e.g., `CLAUDE.md`, `LEARN.MD`, `package.json`) found within each subdirectory.
+2.  **Working Directory:** Never run build or install commands from the home directory (`/Users/ivancaamano`). Always `cd` into the target project first.
+3.  **Tool Selection:** Match the package manager of the project (`npm`, `pnpm`, or `bun`) as defined in the Project Map.
+4.  **Language Preference:** Strictly use **TypeScript** for all JS/TS projects. Use **Python** for corporate data projects.
 
-### Formatting
+## Common Workflows
 
-- 2-space indentation
-- Single quotes
-- Semicolons
-- Trailing commas in multi-line structures
+### Web Development (Next.js)
+- **Start Dev Server:** `npm run dev` (Note: Uses `--webpack` flag).
+- **Test:** `npm run test` (Vitest) or `npm run test:e2e` (Playwright).
+- **Validation:** `npm run lint` and `npm run type-check`.
 
-### Architecture
+### Backend Development (NestJS)
+- **Start Dev Server:** `pnpm dev`.
+- **Database:** `docker compose up -d` to start PostgreSQL, then `prisma migrate dev` or `prisma studio`.
+- **Test:** `pnpm test` or `pnpm test:e2e`.
 
-- Keep functions small and focused (single responsibility)
-- Avoid deep nesting — use early returns
-- No premature abstraction — three similar lines beats a helper no one needs
-- Don't add error handling for scenarios that can't happen
-- Trust framework guarantees; validate only at system boundaries (user input, external APIs)
-- Only make changes directly requested or clearly necessary
+### Mobile Development (Expo)
+- **Start Dev Server:** `bun dev` or `expo start`.
+- **Build:** `eas build --profile preview`.
+- **Lint:** `expo lint`.
 
-### Don't Do
+### Corporate Automation (Python)
+- **Run Tests:** `pytest`.
+- **Style:** Use `ruff` for linting.
 
-- No backwards-compatibility shims for code that isn't public
-- No docstrings or type annotations added to code you didn't change
-- No feature flags for simple changes
-- No over-engineering for hypothetical future requirements
+## Development Conventions
 
-## Testing
+- **Naming:**
+    - `PascalCase` for React/React Native components.
+    - `camelCase` for variables and functions.
+    - `kebab-case` for route folders and utility files.
+- **Styling:** Tailwind CSS (v4) for web; native styling for Expo.
+- **Testing:**
+    - Unit tests: Vitest (Web), Jest (Server/Mobile), Pytest (Python).
+    - End-to-End: Playwright (Web).
+    - Keep tests adjacent to the code they test (`*.spec.ts`) or in `tests/`/`__tests__/` folders.
+- **Architecture:**
+    - Mobile apps communicate with the NestJS server via axios + TanStack Query.
+    - Web apps integrate directly with Supabase.
+    - Shared AI configurations are managed in `~/Proyectos/config/` and symlinked to projects.
 
-- Write tests for new features
-- Follow AAA: Arrange, Act, Assert
-- Use descriptive test names
+## Skills & Slash Commands
 
-## Git
+Always check available skills before acting. If a skill matches the task domain — even partially — invoke it BEFORE writing code, delegating, or responding.
 
-- Commit messages: imperative present tense ("Add", "Fix", "Update", "Remove")
-- First line under 72 characters
+- A domain-specific skill exists for the task (frontend design, web guidelines, React best practices, etc.)
+- The user explicitly references a slash command (`/commit`, `/review-pr`, etc.)
+- A hook or system injects a skill recommendation — follow it
 
-## Browser Automation
+### Skill Map
 
-Use `agent-browser` for web automation. Run `agent-browser --help` for all commands.
+| Domain | Skill | When to Use |
+|--------|-------|-------------|
+| Planning | `brainstorm`, `write-plan`, `execute-plan` | Open-ended problems, multi-step tasks |
+| Debugging | `systematic-debugging`, `react-doctor` | Bugs persisting after 2+ attempts, React-specific issues |
+| Code Quality | `simplify`, `code-review`, `review-pr` | After writing code, before commits/PRs |
+| Frontend | `vercel-react-best-practices`, `web-design-guidelines`, `frontend-design` | React/Next.js components, UI review, accessibility |
+| UI Polish | `make-interfaces-feel-better`, `uifix`, `shadcn` | Animations, styling bugs, component library |
+| Git | `commit`, `commit-push-pr`, `clean_gone` | Committing, shipping, branch cleanup |
+| Stack | `next-best-practices`, `react-native-expo`, `prisma-client-api`, `better-auth` | Framework-specific patterns |
+| Content | `copywriting`, `seo-audit`, `content-strategy` | User-facing copy, SEO, marketing |
+| Meta | `find-skills` | Not sure which skill applies |
 
-Core workflow:
+Skipping a relevant skill = incomplete work. Skills contain up-to-date patterns, checklists, and constraints that training data may lack. Trust the skill over memory.
 
-1. `agent-browser open <url>` — Navigate to page
-2. `agent-browser snapshot -i` — Get interactive elements with refs (@e1, @e2)
-3. `agent-browser click @e1` / `fill @e2 "text"` — Interact using refs
-4. Re-snapshot after page changes
+## Security & Secrets
+
+- Never commit `.env` files, API keys, or mobile signing credentials.
+- Document required environment variables in an `env.example` file within the respective repository.

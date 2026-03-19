@@ -1,49 +1,52 @@
-# AI Agent Instructions
+# Repository Guidelines
 
-## Overview
+## Project Structure & Module Organization
+This root is a multi-project workspace, not a single app. Active code lives under `Proyectos/`, with separate repositories such as `Proyectos/nexxo-web` (Next.js), `Proyectos/server` and `Proyectos/server-auth` (NestJS), `Proyectos/expo-app*` (Expo/React Native), and `Proyectos/atresmedia-tv-budgets` (Python). Shared agent assets and local automation live in `.agents/` and `.codex/`. Keep source, tests, and config inside each project folder; do not add app code at the workspace root.
 
-This configuration file provides general instructions for AI agents working on projects. These guidelines help maintain consistency and quality across different AI-powered development workflows.
+## Build, Test, and Development Commands
+Run commands from the target project directory, not from `/Users/ivancaamano`.
 
-## Guidelines
+- `cd Proyectos/nexxo-web && npm run dev`: start the Next.js app locally.
+- `cd Proyectos/nexxo-web && npm run test && npm run test:e2e`: run Vitest unit tests and Playwright end-to-end coverage.
+- `cd Proyectos/server && pnpm dev`: start the NestJS API in watch mode.
+- `cd Proyectos/server && pnpm test:cov`: run Jest with coverage.
+- `cd Proyectos/expo-app-testing && npm run dev`: launch the Expo app.
+- `cd Proyectos/atresmedia-tv-budgets && pytest`: run the Python test suite.
 
-### Code Quality
-- Write clean, maintainable, and well-documented code
-- Follow the project's existing code style and conventions
-- Ensure all code is properly tested before committing
-- Use meaningful variable and function names
+Check each project's `package.json` or `pyproject.toml` before adding new scripts.
 
-### Communication
-- Provide clear explanations for proposed changes
-- Ask for clarification when requirements are ambiguous
-- Document important decisions and trade-offs
-- Keep responses concise and focused
+## Coding Style & Naming Conventions
+Follow the formatter and linter already configured in each project. Current tooling includes `eslint`, `prettier`, `vitest`, `jest`, and Expo/Nest defaults. Use 2-space indentation in JS/TS projects unless the local formatter overrides it. Prefer `PascalCase` for React components, `camelCase` for variables/functions, and `kebab-case` for route folders and utility file names. Keep tests adjacent to their stack conventions, for example `*.spec.ts`, `tests/`, or `__tests__/`.
 
-### Best Practices
-- Prioritize security and performance
-- Follow language-specific best practices
-- Consider edge cases and error handling
-- Refactor code when appropriate to improve readability
+## Testing Guidelines
+Match the framework used by the project: Vitest and Playwright for web apps, Jest for NestJS and Expo, and `pytest` for Python services. Add tests for new behavior and regressions, not just happy paths. Favor small, deterministic unit tests first, then E2E only where flows cross boundaries.
 
-## Context
+## Commit & Pull Request Guidelines
+Recent history shows short imperative subjects, with mixed styles such as `feat: add ...`, `Fix typo ...`, and `Refactor ...`. Prefer concise, present-tense commit messages and keep each commit scoped to one change. PRs should include a clear summary, impacted project path, test evidence, linked issue when applicable, and screenshots or recordings for UI changes.
 
-This is a centralized configuration repository. When working with these configurations:
+## Skills & Slash Commands
 
-- Always preserve existing formatting and structure
-- Update documentation when making changes
-- Test configuration changes before committing
-- Consider backwards compatibility
-- Follow semantic versioning for breaking changes
+Always check available skills before acting. If a skill matches the task domain — even partially — invoke it BEFORE writing code, delegating, or responding.
 
-## Customization
+- A domain-specific skill exists for the task (frontend design, web guidelines, React best practices, etc.)
+- The user explicitly references a slash command (`/commit`, `/review-pr`, etc.)
+- A hook or system injects a skill recommendation — follow it
 
-Modify this template to match your specific project needs, coding standards, and workflow preferences.
+### Skill Map
 
-## Browser Automation
+| Domain | Skill | When to Use |
+|--------|-------|-------------|
+| Planning | `brainstorm`, `write-plan`, `execute-plan` | Open-ended problems, multi-step tasks |
+| Debugging | `systematic-debugging`, `react-doctor` | Bugs persisting after 2+ attempts, React-specific issues |
+| Code Quality | `simplify`, `code-review`, `review-pr` | After writing code, before commits/PRs |
+| Frontend | `vercel-react-best-practices`, `web-design-guidelines`, `frontend-design` | React/Next.js components, UI review, accessibility |
+| UI Polish | `make-interfaces-feel-better`, `uifix`, `shadcn` | Animations, styling bugs, component library |
+| Git | `commit`, `commit-push-pr`, `clean_gone` | Committing, shipping, branch cleanup |
+| Stack | `next-best-practices`, `react-native-expo`, `prisma-client-api`, `better-auth` | Framework-specific patterns |
+| Content | `copywriting`, `seo-audit`, `content-strategy` | User-facing copy, SEO, marketing |
+| Meta | `find-skills` | Not sure which skill applies |
 
-Use `agent-browser` for web automation. Run `agent-browser --help` for all commands.
+Skipping a relevant skill = incomplete work. Skills contain up-to-date patterns, checklists, and constraints that training data may lack. Trust the skill over memory.
 
-Core workflow:
-1. `agent-browser open <url>` - Navigate to page
-2. `agent-browser snapshot -i` - Get interactive elements with refs (@e1, @e2)
-3. `agent-browser click @e1` / `fill @e2 "text"` - Interact using refs
-4. Re-snapshot after page changes
+## Security & Configuration Tips
+Do not commit secrets, local `.env` files, tokens, or mobile signing material. Store project-specific configuration inside the owning repo and document required environment variables in that repo's README.
